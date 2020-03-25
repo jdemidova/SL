@@ -138,7 +138,6 @@ _id,name,meta.clinical.age_approx,meta.clinical.anatom_site_general,meta.clinica
 582b8e1e9fc3c1566bbcb4aa,ISIC_0014766,50,upper extremity,malignant,,melanoma,histopathology,,,,,,,,True,,,,male,,,,contact non-polarized,,dermoscopic,,6622,4420
 582b8e2a9fc3c1566bbcb4e0,ISIC_0014772,75,upper extremity,malignant,,melanoma,histopathology,,,,,,,,True,,,,male,,,,contact non-polarized,,dermoscopic,,6642,4401
 582b8e409fc3c1566bbcb557,ISIC_0014784,45,anterior torso,malignant,,melanoma,histopathology,,,,,,,,True,,,,male,,,,contact non-polarized,,dermoscopic,,6642,4422
-582b8e499fc3c1566bbcb584,ISIC_0014788,,upper extremity,malignant,,melanoma,histopathology,,,,,,,,True,,,,,,,,contact non-polarized,,dermoscopic,,6622,4441
 582b8e4d9fc3c1566bbcb599,ISIC_0014790,85,head/neck,malignant,,melanoma,histopathology,,,,,,,,True,,,,male,,,,contact non-polarized,,dermoscopic,,6641,4441
 582b8e579fc3c1566bbcb5ca,ISIC_0014795,65,posterior torso,malignant,,melanoma,histopathology,,,,,,,,True,,,,male,,,,contact non-polarized,,dermoscopic,,6641,4420
 582b8e609fc3c1566bbcb5f7,ISIC_0014800,45,lower extremity,malignant,,melanoma,histopathology,,,,,,,,True,,,,female,,,,contact non-polarized,,dermoscopic,,6642,4422

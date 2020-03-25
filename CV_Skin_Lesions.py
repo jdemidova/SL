@@ -5,7 +5,9 @@ import cv2 as cv
 import csv
 from matplotlib import pyplot as plt
 from scipy import stats as st
+from sklearn.ensemble import RandomForestClassifier
 import random
+import pandas as pd
 
 
 class SLImageAnalysis:
@@ -17,7 +19,7 @@ class SLImageAnalysis:
         self.sizeY = self.image.shape[0]
         self.sizeX = self.image.shape[1]
         self.diagnosis = ""
-        self.patient_age = 0
+        self.patient_age = 0.0
         self.binary_image = self.binarization()
         self.contour = self.contour_init()
         self.area, self.perimeter, self.GD, self.SD, self.CRC, self.irA, \
@@ -134,9 +136,7 @@ def write_features():
     sortedlist = sorted(reader, key=lambda row: row[1])
     counter_melanoma_test, counter_nevus_test, counter_melanoma_learn, counter_nevus_learn, \
         counter_melanoma, counter_nevus = 0, 0, 0, 0, 0, 0
-    arr = []
-    arr_test = []
-    arr_learn = []
+    arr, arr_test, arr_learn = [], [], []
     for k in sortedlist:
         if k[6] == 'melanoma':
             counter_melanoma += 1
@@ -184,17 +184,75 @@ def write_features():
     print("   nevus learning images: " + str(counter_nevus_learn))  # 306
     print("   nevus testing images: " + str(counter_nevus_test))  # 310
     print("melanoma images: " + str(counter_melanoma))  # 632
-    print("   melanoma learning images: " + str(counter_melanoma_learn))  # 329
+    print("   melanoma learning images: " + str(counter_melanoma_learn))  # 328
     print("   melanoma testing images: " + str(counter_melanoma_test))  # 303
 
 
 def random_forest_classification():
-    return 0
+    learn_path = os.path.join(os.getcwd(), 'data', 'all_features_learn.csv')
+    reader = csv.reader(open(learn_path))
+    print("Read learning data...")
+    train, train_labels = np.empty((0, 34), dtype=float), np.empty((0,), dtype=str)
+    col = []
+    for k in reader:
+        if k[1] == 'melanoma' or k[1] == 'nevus':
+            train = np.append(train, [k[2:]], axis=0)
+            train_labels = np.append(train_labels, k[1])
+        else:
+            col = k[2:]
+            continue
+    train_copy = np.empty((np.shape(train)[0], 34), dtype=float)
+    for i in range(np.shape(train)[0]):
+        train_copy[i] = np.ndarray.astype(train[i], float)
+
+    test_path = os.path.join(os.getcwd(), 'data', 'all_features_test.csv')
+    reader = csv.reader(open(test_path))
+    print("Read testinging data...")
+    test, test_labels = np.empty((0, 34), dtype=float), np.empty((0,), dtype=str)
+    for k in reader:
+        if k[1] == 'melanoma' or k[1] == 'nevus':
+            test = np.append(test, [k[2:]], axis=0)
+            test_labels = np.append(test_labels, k[1])
+        else:
+            continue
+    test_copy = np.empty((np.shape(test)[0], 34), dtype=float)
+    for i in range(np.shape(test)[0]):
+        test_copy[i] = np.ndarray.astype(test[i], float)
+
+    print("Classifier init...")
+    model = RandomForestClassifier(n_estimators=6000, bootstrap=True, max_features='sqrt')
+    print("Training the model...")
+    model.fit(train_copy, train_labels)
+    print("Training results:")
+    print("   Feature importances: ")
+    print(sorted(zip(map(lambda x: round(x, 4), model.feature_importances_), col), reverse=True))
+    n_nodes, max_depths = [], []
+    # Stats about the trees in random forest
+    for ind_tree in model.estimators_:
+        n_nodes.append(ind_tree.tree_.node_count)
+        max_depths.append(ind_tree.tree_.max_depth)
+    print(f'   Average number of nodes {int(np.mean(n_nodes))}')
+    print(f'   Average maximum depth {int(np.mean(max_depths))}')
+    # Training predictions (to demonstrate overfitting)
+    train_predictions = model.predict(train_copy)[:]
+    train_probs = model.predict_proba(train_copy)[:]
+    # Testing predictions (to determine performance)
+    test_predictions = model.predict(test_copy)[:]
+    test_probs = model.predict_proba(test_copy)[:]
+    print("  Training data class probabilities: " + str(model.classes_))
+    print(train_probs)
+    # print("  Training data predictions: ")
+    # print(train_predictions)
+    print("  Testing data class probabilities: " + str(model.classes_))
+    print(test_probs)
+    # print("  Testing data predictions: ")
+    # print(test_predictions)
+
 
 if __name__ == '__main__':
     print("main")
     # write_features()
-    # random_forest_classification()
+    random_forest_classification()
 
 
 
